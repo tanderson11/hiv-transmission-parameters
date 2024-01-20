@@ -1,0 +1,110 @@
+Supplementary code for A TRANSMISSION-VIRULENCE EVOLUTIONARY TRADE-OFF EXPLAINS ATTENUATION OF HIV-1 IN UGANDA
+
+François Blanquart, Mary Kate Grabowski, Joshua Herbeck, Fred Nalugoda, David Serwadda, Michael A. Eller, Merlin L. Robb, Ronald Gray, Godfrey Kigozi, Oliver Laeyendecker, Katrina Lythgoe, Gertrude Nakigozi, Thomas C. Quinn, Steven J. Reynolds, Maria J. Wawer, Christophe Fraser
+
+Francois Blanquart October 2016
+francois.blanquart@normalesup.org
+
+For anonymisation purpose, only the summary table is shared and not the full visit history of participants. Dates were rounded at the 0.1 level following these recommendations http://dx.doi.org/10.1136/bmj.c181
+This ensures qualitative reproducibility, but the figures will not be exactly the same as in the paper.
+
+1. The data is in the RData file cleaned.data.RData, that contains the "all.bypatient" table
+"all.bypatient" contains one row per participant
+
+	id: 						participant ID
+	spvl 						Set-Point Viral Load: the average of all viral loads before ART, > 6 months after mid-point
+	spvl.ur.noclean 			Set-Point Viral Load, same as spvl.ur but the extra cleaning steps were not considered
+	spvl.ur.noclean2 			Set-Point Viral Load, same as spvl.ur.noclean but values <= 6 months after mid-point were included
+	spvl.ur 					Set-Point Viral Load, same as spvl but undetectable viral loads are removed
+	spvl.ur.pre2004 			Set-Point Viral Load, only including viral loads measured < 2004
+	mean.date.in.spvl 			mean date of assays in spvl
+	doneby: 					name of the clinic in which viral load was measured
+	assay: 						assay with which viral load was measured
+	sdvl 						standard deviation of viral load measures including in spvl
+	n.vl 						number of viral loads measured for this participant
+	n.vl.in.spvl 				number of viral loads included in spvl
+	n.vl.in.spvl.ur 			number of viral loads included in spvl.ur
+	n.doneby 					number of clinics in which viral loads were measured for spvl
+	n.assay 					number of different assays used for spvl
+	has.visit 					indicator variable, TRUE if the patient had one viral load measured during a Rakai Community Cohort Study visit (indicator of ambiguous serology result)
+	date.first.pos: 			date first HIV positive test
+	date.last.neg: 				date last HIV negative test
+	mid.point: 					mid-point date between last negative and first positive (taken as the date of infection)
+	date.first.visit: 			date of first visit of the participant at a Rakai clinic
+	date.last.visit: 			date of last visit of the participant at a Rakai clinic
+	arvs.date: 					date partipipant started ART if ART was obtained from a Rakai clinic
+	arvs.date.self: 			date participant self-reported taking ART (at any clinic)
+	cause.of.death: 			cause of death
+	first.three.symp: 			date first three symptoms of AIDS observed
+	first.cd4.200: 				date CD4 count first went below 200 cells / mL
+	aids.date: 					date AIDS declared
+	circum: 					male circumcision status (1 = circumcised, 2 = uncircumcised)
+	age.at.midpoint 			age at mid-point
+	sex							gender M or F
+	circum.wNA 					same as circum but missing information is considered as variable "NA"
+	subtype 					subtype
+	is.unique.subtype 			number of subtypes identified (can be > 1 for recombinants and multiple infections)
+	subtype.withNA 				same as subtype but missing subtype is considered as variable "NA"
+	merged.subtype				simplified subtype category
+	mid.point.cat 				mid-point date category
+	age.at.midpoint.cat 		age at mid-point category
+	merged.subtype.withNA 		same as merged.subtype but missing subtype is considered as variable "NA"
+	is.na.subtype 				indicator variable, TRUE if subtype is unknown
+	time.to.aids 				time between mid-point and AIDS in years
+	none 						indicator variable used for analysis
+	time.no.aids 				time between mid-point and last visit participant had not AIDS
+	time.to.aids2 				same as time.to.aids but set to "Inf" when the participant had a visit without AIDS
+	aids.indicator 				indicator of what was used to define AIDS
+	time.to.death 				time between mid-point and death
+	subtype.simple 				very simplified subtype category
+	year.died 					year the participant died
+
+2. viral.load.time6.R contains code to analyse the determinants of SPVL and in particular the temporal trends. It takes as input "cleaned.data.RData".
+
+3. all.trajectories.pdf shows individual viral load trajectories within patients for 603 incident cases with a SPVL value when undetectable viral load are removed. Points are VL values, in black when used for the SPVL calculation. The vertical red line is the mid-point between last negative test and first positive test. The vertical light green line is the date ART started. The vertical dark green line is the date of first self-reported ART. The horizontal black line is the SPVL value.
+
+4. the folder "simulation" contains R code to simulate the ODE model, for the model without subtypes ("simulations.R") and the model with subtype ("simulations_subtype.R"). flat3.beta.bestpars.csv and flat3.tAIDS.bestpars.csv files are input files containing the best parameters for transmission and time to AIDS.  flat3.beta.bestparsA.csv and flat3.beta.bestparsD.csv are input files containing the best transmission parameters for subtype A and D. The sub-folder output contains output files with the results of ODE simulations used in figure 2 of the paper.
+
+5. the folder "transmission" contains code to infer the relationship between the transmission rate and SPVL and other covariates.
+	5.1 "cleaned.couples.data.RData" is a RData file that contains "couples.unique", a table with one row per serodiscordant couples and the following columns:
+		male.firstPosDate			male date first HIV-positive
+		male.lastNegDate			male date last HIV-negative
+		female.firstPosDate			female date first HIV-positive
+		female.lastNegDate			female date last HIV-negative
+		male.index					TRUE if male is the index
+		female.index				TRUE if female is the index
+		female.firstObsDate			female date first visit
+		male.firstObsDate			male date first visit
+		female.lastObsDate			female date last visit
+		male.lastObsDate			male date last visit
+		partner.firstObsDate		partner date first visit
+		partner.lastObsDate			partner date last visit
+		partner.firstPosDate		partner date first HIV-positive
+		index.firstPosDate			index date first HIV-positive
+		index.lastNegDate			index date last HIV-negative
+		index.midpoint 				index date mid-point
+		partner.lastNegDate			partner date last negative
+		tbegin 						date at which observation of serodiscordant couple begins; equal to the maximum of (partner.firstObsDate, index.midpoint)
+		index.first.art.date 		index date first on ART
+		n.vl 						number of viral load measures in SPVL
+		spvl 						SPVL
+		none						indicator variable used for analysis
+		sub 						subtype
+		sex 						gender of the index M or F
+		index.midpoint.cat 			index date mid-point as a category
+		circum 						male circumcision status, 0 = uncircumcised, 1 = circumcised
+		assay 						assay most frequently used for viral loads in spvl
+		n.vl.ur 					number of viral load measures in SPVL when undetectable viral loads are removed
+		spvl.ur 					SPVL when undetectable viral loads are removed
+		
+	5.2 "viral.load.transmission3.R" the R code that infers the maximum likelihood relationship between the transmission rate and SPVL and other covariates. It takes as input "cleaned.couples.data.RData"
+	5.3 "functions_transmission.R" various functions used by "viral.load.transmission3.R"
+
+6. the folder "timetoAIDS" contains code to infer the relationship between the time to AIDS and SPVL and other covariates
+	6.1 "viral.load.time.to.AIDS3.R" the R code that infers the maximum likelihood relationship between time to AIDS and SPVL and other covariates. It takes as input "cleaned.data.RData"
+	6.2 "functions_timetoAIDS.R" various functions used by "viral.load.time.to.AIDS3.R"
+
+
+
+
+

@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "hiv-parameters"
+version = "0.1.0"
+description = ""
+authors = ["Thayer Anderson <tanderson11@gmail.com>"]
+readme = "README.md"
+packages = [{include = "hiv_parameters"}]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<4.0"
+numpy = "^1.26.3"
+pandas = "^2.1.4"
+
+[tool.poetry.group.dev.dependencies]
+ipython = "^8.20.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
