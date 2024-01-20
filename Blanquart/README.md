@@ -68,25 +68,10 @@ After excluding these couples, we were left with data for 807 serodiscordant cou
 ## Confusions:
 
 We should probably test a range of sex frequency to account for the fact that condom use maybe increased? Maybe do this only for couples after the Gray study (2001)?
-
 Should we also infer ART begins the midpoint? Kinda hard because I'm not sure we have a list of every observation made
 
 What to do with couple 16 (NA for first obs date for female)?
 What to do with couples 76, 152, 211, 244, etc. where the first observation for the two partners aren't equal but are very close in time? (Assume that they were a couple at the first time? Or assume that they weren't?)
-
-
-
-My understanding was that for missing SPVL, the value of 200/copies per mL was used. My evidence was the fact that couples with 0 detectable viral load measurements (`n.vl.ur` = 0) --- for example couples 967, 1329, 1365, 2312 --- have `spvl` = 2.301030 = log_10 (200). But couple 1496 confounds the analysis of how missing data was supplied: 
-
-Couple 1496 is confusing:
-n.vl = 4
-n.vl.ur = 1
-spvl = 2.419219
-spvl.ur = 2.773786
-
-log_10 ( (10^(2.773786) + 3 * 200)/4 ) =/= 2.419219
-
-Okay but wait (2.301 * 4 - 2.773786)/3 = 2.419219. So SPVL is the mean of the logged values. Why the mean of logged values and not the log of the mean value? That corresponds to a geometric mean. Why do we want a geometric mean?
 
 # References
 
