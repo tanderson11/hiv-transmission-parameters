@@ -50,7 +50,6 @@ After tracking the supposed duration of observed potentially infectious contact,
 | 741      | `index.midpoint` was 1997.2. Last observation of partner (negative) was made on 1997.7. 1997.2 + 0.5 == 1997.7 | 0.0 |
 | 1416     | `index.midpoint` was 1997.7. Last observation of partner (negative) was made on 1998.2. 1997.7 + 0.5 == 1998.2 | 0.0 |
 | 2098     | `index.midpoint` was 2000.9. Last observation of partner (negative) was made on 2001.4. 2000.9 + 0.5 == 2001.4 | 0.0 |
-
 | 591      | `index.midpoint` was 1999.9. Last observation of partner (negative) was made on 2000.3. 2000.3 < 1999.9 + 0.5 | -0.1 |
 | 2218      | `index.midpoint` was 2000.2. Last observation of partner (negative) was made on 2000.5. 2000.5 < 2000.2 + 0.5 | -0.2 |
 | 703      | Reported initiation of ART was 2009.1. First index positive test was 2007.5. | -1.3 |
