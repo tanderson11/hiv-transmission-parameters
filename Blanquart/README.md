@@ -31,15 +31,15 @@ Relevant columns:
       - `min(index.first.art.date, partner.lastNegDate)` if partner never seroconverted. This encoded the assumption that after beginning ART, index partners successfully suppressed their viral load. Some credence was lent to this assumption by the observation that 0 recorded seroconversions took place after the index partner began ART.
       - `partner.inferred.seroconversion.date` if partner seroconverted.
   - `duration` was finally set equal to `infectious.contact.period.inferred.end` - `index.inferred.spvl.start.date`.
-- A `unprotected_coital_frequency` column was added with a fixed value of 9. This value was chosen based on a previous study by Gray et al. (2001) for the same cohort that estimated frequency of sex via extensive interviews with both partners independently. The interviews also suggested very low condom use, so it was assumed that all sex was unprotected.
+- A `unprotected_coital_frequency` column was added with a fixed value of 9/month = 108/year. This value was chosen based on a previous study by Gray et al. (2001) for the same cohort that estimated frequency of sex via extensive interviews with both partners independently. The interviews also suggested very low condom use, so it was assumed that all sex was unprotected.
 
 The validity of the `duration` column was verified by checking the following representative couples:
 
 | Couple  | Description | Duration |
 | ------- | ------------- | ------ |
 | 1       | Index is positive at first observation on 1994.9. Partner seroconverts before 2002.1 and after 2000.8. | 6.55 |
-| 7       | Index is positive at first observation on 1994.9. Partner never seroconverts. | 0.8 | 
-| 814     | Index is first positive in 2005.1. Index first ART reported on 2008.6. Partner never seroconverts. | 3.5 |
+| 7       | Index is positive at first observation on 1994.9. Partner never seroconverts. Last observation is 1995.7 | 0.8 |
+| 814     | Index is first positive in 2005.1. Index first ART reported on 2008.6. Partner never seroconverts. Last observation is  | 3.5 |
 | 914     | Index is first positive on 2009.2 after being first observed on 2007.5. Partner never seroconverts. Last observation is 2010.7. | 1.9 |
 
 After tracking the supposed duration of observed potentially infectious contact, we excluded the 10 couples with a duration of <=0 years. These are individually discussed below:
@@ -73,9 +73,10 @@ Should we also infer ART begins the midpoint? Kinda hard because I'm not sure we
 What to do with couple 16 (NA for first obs date for female)?
 What to do with couples 76, 152, 211, 244, etc. where the first observation for the two partners aren't equal but are very close in time? (Assume that they were a couple at the first time? Or assume that they weren't?)
 
+Couple 814 seems broken: last negative date for male is after last observation date?
+
 # References
 
 Blanquart, François et al. (2016). Data from: A transmission-virulence evolutionary trade-off explains attenuation of HIV-1 in Uganda \[Dataset\]. Dryad. [https://doi.org/10.5061/dryad.7kr85]
 
 François Blanquart, Mary Kate Grabowski, Joshua Herbeck, Fred Nalugoda, David Serwadda, Michael A Eller, Merlin L Robb, Ronald Gray, Godfrey Kigozi, Oliver Laeyendecker, Katrina A Lythgoe, Gertrude Nakigozi, Thomas C Quinn, Steven J Reynolds, Maria J Wawer, Christophe Fraser (2016) A transmission-virulence evolutionary trade-off explains attenuation of HIV-1 in Uganda eLife 5:e20492. [https://doi.org/10.7554/eLife.20492]
-    
