@@ -52,10 +52,10 @@ After tracking the supposed duration of observed potentially infectious contact,
 | 2098     | `index.midpoint` was 2000.9. Last observation of partner (negative) was made on 2001.4. 2000.9 + 0.5 == 2001.4 | 0.0 |
 | 591      | `index.midpoint` was 1999.9. Last observation of partner (negative) was made on 2000.3. 2000.3 < 1999.9 + 0.5 | -0.1 |
 | 2218      | `index.midpoint` was 2000.2. Last observation of partner (negative) was made on 2000.5. 2000.5 < 2000.2 + 0.5 | -0.2 |
-| 703      | Reported initiation of ART was 2009.1. First index positive test was 2007.5. | -1.3 |
-| 921      | Reported initiation of ART was 2005.9. First index positive test was 2010.4. | -1.6 |
-| 921      | Reported initiation of ART was 2005.8. First index positive test was 2007.7. | -1.9 |
-| 921      | Reported initiation of ART was 2005. First index positive test was 2008.5. | -3.5 |
+| 703      | Reported initiation of ART was 2009.1. First index positive test was 2010.4. | -1.3 |
+| 921      | Reported initiation of ART was 2005.9. First index positive test was 2007.5. | -1.6 |
+| 2860      | Reported initiation of ART was 2005.8. First index positive test was 2007.7. | -1.9 |
+| 705      | Reported initiation of ART was 2005. First index positive test was 2008.5. | -3.5 |
 
 <sup>*</sup> Note that the implied midpoint based on last negative and first positive would be 1996.25, but we preferred to use the reported midpoint when available because it was presumably calculated with reference to the true dates of observations rather than the coarse dates of observations provided for anonymization.
 

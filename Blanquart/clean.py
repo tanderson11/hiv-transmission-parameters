@@ -31,6 +31,7 @@ df['infectious.contact.period.inferred.end'] = np.where(
 
 df['duration'] = df['infectious.contact.period.inferred.end'] - df['index.inferred.spvl.start.date']
 
+df_bad = df[df['duration'] <= 0]
 df = df[df['duration'] > 0]
 
 with open('couples.extra.columns.csv', 'w') as f:
