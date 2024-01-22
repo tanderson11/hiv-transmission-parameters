@@ -1,6 +1,6 @@
 # Transmission probability and viral load data from Rakai
 
-On their way to analyze evolutionary tradeoffs in the virulence of HIV, Blanquart et al. explore the relationship between set point viral load (SPVL) and the probability of transmission between serodiscordant sexual partners. To quantify this relationship, the authors analyze data from the Rakai Community Cohort Suvery --- an open cohort, longitudinal study of people with HIV living in the Rakai District, Uganda. In particular, they use data from 817 serodiscordant heterosexual couples in the cohort where the viral load of the HIV positive partner was measured at least once. These authors made their data available in [https://doi.org/10.5061/dryad.7kr85](a Dryad repository). Below we discuss the relevant columns of this data in our reanalysis, and we discuss the steps we used to process the data for our purposes.
+On their way to analyze evolutionary tradeoffs in the virulence of HIV, Blanquart et al. explore the relationship between set point viral load (SPVL) and the probability of transmission between serodiscordant sexual partners. To quantify this relationship, the authors analyze data from the Rakai Community Cohort Suvery --- an open cohort, longitudinal study of people with HIV living in the Rakai District, Uganda. In particular, they use data from 817 serodiscordant heterosexual couples in the cohort where the viral load of the HIV positive partner was measured at least once. These authors made their data available in [a Dryad repository](https://doi.org/10.5061/dryad.7kr85). Below we discuss the relevant columns of this data in our reanalysis, and we discuss the steps we used to process the data for our purposes.
 
 Relevant columns:
 - `Couple #`: an integer identifying the serodiscordant couple.
@@ -77,6 +77,6 @@ Couple 814 seems broken: last negative date for male is after last observation d
 
 # References
 
-Blanquart, François et al. (2016). Data from: A transmission-virulence evolutionary trade-off explains attenuation of HIV-1 in Uganda \[Dataset\]. Dryad. [https://doi.org/10.5061/dryad.7kr85]
+Blanquart, François et al. (2016). Data from: A transmission-virulence evolutionary trade-off explains attenuation of HIV-1 in Uganda \[Dataset\]. Dryad. https://doi.org/10.5061/dryad.7kr85
 
-François Blanquart, Mary Kate Grabowski, Joshua Herbeck, Fred Nalugoda, David Serwadda, Michael A Eller, Merlin L Robb, Ronald Gray, Godfrey Kigozi, Oliver Laeyendecker, Katrina A Lythgoe, Gertrude Nakigozi, Thomas C Quinn, Steven J Reynolds, Maria J Wawer, Christophe Fraser (2016) A transmission-virulence evolutionary trade-off explains attenuation of HIV-1 in Uganda eLife 5:e20492. [https://doi.org/10.7554/eLife.20492]
+François Blanquart, Mary Kate Grabowski, Joshua Herbeck, Fred Nalugoda, David Serwadda, Michael A Eller, Merlin L Robb, Ronald Gray, Godfrey Kigozi, Oliver Laeyendecker, Katrina A Lythgoe, Gertrude Nakigozi, Thomas C Quinn, Steven J Reynolds, Maria J Wawer, Christophe Fraser (2016) A transmission-virulence evolutionary trade-off explains attenuation of HIV-1 in Uganda eLife 5:e20492. https://doi.org/10.7554/eLife.20492
