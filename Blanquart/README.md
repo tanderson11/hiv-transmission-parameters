@@ -6,66 +6,86 @@ Relevant columns:
 - `Couple #`: an integer identifying the serodiscordant couple.
 - `male.index`: TRUE if the male partner was the index HIV case.
 - `female.index`: TRUE if the female partner was the index HIV case.
-- `spvl`: the set point (log 10) viral load for the index partner. Determined as the average of all (log 10) viral loads before ART but >6 months after mid-point. When the viral load was undetectable in the index partner (below the detection limit of 400 copies/mL), a viral load of 200 copies/mL was used. (See Appendix 1).
+- `spvl`: the set point (log 10) viral load for the index partner. Determined as the average of all (log 10) viral loads before ART but >6 months after inferred point of infection (mid point between last negative and first positive). When the viral load was undetectable in the index partner (below the detection limit of 400 copies/mL), a viral load of 200 copies/mL was used. (See Appendix 1).
 - `spvl.ur`: the set point viral load excluding all measurements when the index partner had a viral load below the detection threshold.
 - `n.vl`: number of measurements taken of the viral load of the index partner.
-- `male.firstPosDate`: male date first HIV-positive (if `female.index` is true then this column will have value `inf` unless seroconversion took place).
-- `female.firstPosDate`: female date first HIV-positive (if `male.index` is true then this column will have value `inf` unless seroconversion took place).
+- `male.firstPosDate`: male date first HIV-positive test (if `female.index` is true then this column will have value `inf` unless seroconversion took place).
+- `female.firstPosDate`: female date first HIV-positive test (if `male.index` is true then this column will have value `inf` unless seroconversion took place).
 - `index.firstPosDate`: date of first HIV positive test for index case.
 - `index.midpoint`: midpoint between last negative test for index and first positive test (0.0 if no negative tests were recorded before first positive).
-- `partner.lastNegDate`: last HIV negative observation for partner (equal to the date of last observation if partner never seroconverted).
-- `partner.firstPosDate`: first HIV positive observation for partner (equal to `inf` if partner never seroconverted).
-- `index.first.art.date`: date that the index individual first began ART.
+- `partner.lastNegDate`: last HIV negative observation for recipient/partner (equal to the date of last observation if partner never seroconverted).
+- `partner.firstPosDate`: first HIV positive observation for recipient/partner (equal to `inf` if partner never seroconverted).
+- `index.first.art.date`: date that the index individual first began ART (determined by self-reports: see Appendix).
 
 ## Processing the data
 
 - The data was exported from the RData file to a csv, which was munged in Python using `pandas`.
 - 36 couples where the index case had 0 measurements of viral load (`n.vl` = 0) were dropped from the data leaving the 817 couples analyzed by Blanquart et al.
 - The set point viral load (`spvl`) was transformed from log 10 viral load to copies/mL.
-- A `success` column (TRUE if partner seroconverted) was developed by assigning FALSE if the partner's date of first positive was `inf` and TRUE otherwise. 277 seroconversions were recorded.
+- An `partner.ever.seroconverted` column was developed by assigning `False` if the partner's date of first positive was `inf` and `True` otherwise. 279 seroconversions were recorded.
+- A `partner.first.pos.after.art` column was developed with a value of `True` if the first positive test of a seroconverting recipient partner was recorded after the index partner reported initiating ART. 17 such couples were recorded.
+- A `partner.seroconverted.before.art` column was added and set equal to `True` if the recipient partner seroconverted and had their first positive test before the index initiated ART. We treat couples where seroconversion may have taken place with the index on ART as if they were non-seroconverting with a duration that extended as long the recipient was known to be negative and the index had not yet initiated ART.
 - A `number` column was developed to represent the number of couples observed with that precise viral load, and the value was set to 1 for all couples because couples were observed individually and data was not aggregated across couples.
-- A `duration` column was developed according the following steps:
-  - An `index.inferred.spvl.start.date` column was temporarily added which was set equal to `index.midpoint` + 0.5 if `index.midpoint` was nonzero and set to `index.firstPosDate` == `index.firstObsDate` if no negative observations were made of the index partner. The addition of 0.5 reflected the fact that in the first 6 months of infection, we cannot assume that the viral load is equal to the SPVL, and therefore we wish to ignore that period while fitting.
-  - A `partner.inferred.seroconversion.date` column was temporarily added. This was set equal to `inf` if partner never seroconverted and (`partner.firstPosDate` + `partner.lastNegDate`)/2 otherwise.
-  - An `infectious.contact.period.inferred.end` column was temporarily added which stored:
-      - `min(index.first.art.date, partner.lastNegDate)` if partner never seroconverted. This encoded the assumption that after beginning ART, index partners successfully suppressed their viral load. Some credence was lent to this assumption by the observation that 0 recorded seroconversions took place after the index partner began ART.
-      - `partner.inferred.seroconversion.date` if partner seroconverted.
-  - `duration` was finally set equal to `infectious.contact.period.inferred.end` - `index.inferred.spvl.start.date`.
-- A `unprotected_coital_frequency` column was added with a fixed value of 9/month = 108/year. This value was chosen based on a previous study by Gray et al. (2001) for the same cohort that estimated frequency of sex via extensive interviews with both partners independently. The interviews also suggested very low condom use, so it was assumed that all sex was unprotected.
+- An `index.inferred.spvl.start.date` column was added which was set equal to `index.firstPosDate + 0.5`. The addition of 0.5 reflected the fact that in the first 6 months of infection, we cannot assume that the viral load is equal to the SPVL, and therefore we wish to ignore that period while fitting. Choosing to ignore a six month period after the first positive test is the most conservative choice --- we could have done 6 months after the midpoint between last negative and first positive for the index, when available --- but this choice does not introduce a bias, rather it only affects statistical power.
+- A `partner.inferred.seroconversion.date` column was temporarily added. 
+  - This was set equal to (`partner.firstPosDate` + `partner.lastNegDate`)/2 where `ever.seroconverted` was True and `inf` elsewhere. (The midpoint approximation was in keeping with the methods of the study. An alternative where we inferred a serconversion date equal to `partner.lastNegDate` was also considered. See later for more details.)
+- An `infectious.contact.period.end` column was added which stored:
+  - If `partner.seroconverted.before.art`: `min(index.first.art.date, partner.inferred.seroconversion.date)`.
+  - Otherwise (partner never serconverted; or it might have taken place while index was on ART): `min(index.first.art.date, partner.lastNegDate)`.
+  - By taking the `min` with respect to ART initiation, we cut from consideration any period after the index partner reported starting ART because the recorded SPVL could not be assumed to be accurate after that point.
+- A `duration` column was added and set equal to `infectious.contact.period.end` - `index.inferred.spvl.start.date`.
+- An `unprotected_coital_frequency` column was added with a fixed value of 9/month = 108/year. This value was chosen based on a previous study by Gray et al. (2001) for the same cohort that estimated frequency of sex via extensive interviews with both partners independently. The interviews also suggested very low condom use, so it was assumed that all sex was unprotected.
 
-The validity of the `duration` column was verified by checking the following representative couples:
+At this point, 58 couples were rejected based on the fact that the considered duration was less than or equal to 0.
+- Four of these cases arose because the reported first initation of ART for the index partner came before their first positive test. In these cases, the methodology described by Blanquart et al. leaves it unclear what the reported SPVL means in reference to these index partners.
+
+| Couple  | Description |
+| ------- | ------------- |
+| 703      | Reported initiation of ART was 2009.1. First index positive test was 2010.4. |
+| 705      | Reported initiation of ART was 2005. First index positive test was 2008.5. |
+| 921      | Reported initiation of ART was 2005.9. First index positive test was 2007.5. |
+| 2604     | Reported initiation of ART was 2007.6. First index positive test was 2008.6. |
+| 2860     | Reported initiation of ART was 2005.8. First index positive test was 2007.7. |
+
+- For all the remaining couples we rejected, we rejected them because the couple was observed for fewer than 6 months after the first positive test for the index partner. We made the conservative choice to ignore the first 6 months after the first positive test as if the first positive test corresponded to the first day of infection. Some of these couples were observed longer but had a reported ART initiation by the index partner during the first 6 months.
+  - The full list of all couples rejected for this reason is: 61,  219,  255,  279,  291,  316,  320,  392,  466,  514,  591,  629, 685,  722,  737,  741,  781,  847,  859,  866,  882,  899, 901, 1207, 1219, 1343, 1362, 1416, 1430, 1458, 1486, 1640, 1758, 1855, 1860, 1867, 1989, 2098, 2123, 2135, 2137, 2144, 2218, 2241, 2367, 2390, 2422, 2506, 2520, 2604, 2803, 2845, 2867, 2948.
+- Below we consider a few representative examples:
 
 | Couple  | Description | Duration |
 | ------- | ------------- | ------ |
-| 1       | Index is positive at first observation on 1994.9. Partner seroconverts before 2002.1 and after 2000.8. | 6.55 |
-| 7       | Index is positive at first observation on 1994.9. Partner never seroconverts. Last observation is 1995.7 | 0.8 |
-| 814     | Index is first positive in 2005.1. Index first ART reported on 2008.6. Partner never seroconverts. Last observation is  | 3.5 |
-| 914     | Index is first positive on 2009.2 after being first observed on 2007.5. Partner never seroconverts. Last observation is 2010.7. | 1.9 |
+| 61       | First index positive test was 1996.7 => SPVL assumed valid after 1997.2. Last observation of partner (negative) was made in 1996.7. | -0.5 |
+| 219      | First index positive test was 1995.7 => SPVL assumed valid after 1996.2. Partner tested negative for the last time in 1995.7 and postive for the first time in 1996.5. We inferred they converted in 1996.1 | -0.1 |
+| 2506     | First index positive test was 2006.1 => SPVL assumed valid after 2006.6. Index reported ART initiation in 2006.5 | -0.1 |
+| 2135     | First index positive test was 2003.7 => SPVL assumed valid after 2004.2. Index reported ART initiation in 2004.8. Recipient partner tested negative for the last time in 2003.8 and positive for the first time in 2005.2. Don't want to guess if the recipient seroconverted while the index was/was not on ART, so we try to use the last negative test, but it took place before SPVL was assumed valid. | -0.4 |
 
-After tracking the supposed duration of observed potentially infectious contact, we excluded the 10 couples with a duration of <=0 years. These are individually discussed below:
+Of the 53 couples dropped for the above reason, the following statistics held:
 
-| Couple  | Description | Duration |
-| ------- | ------------- | ------ |
-| 61       | `index.midpoint` was 1996.2<sup>*</sup>. Last observation of partner (negative) was made on 1996.7. 1996.2 + 0.5 == 1996.7 | 0.0 |
-| 741      | `index.midpoint` was 1997.2. Last observation of partner (negative) was made on 1997.7. 1997.2 + 0.5 == 1997.7 | 0.0 |
-| 1416     | `index.midpoint` was 1997.7. Last observation of partner (negative) was made on 1998.2. 1997.7 + 0.5 == 1998.2 | 0.0 |
-| 2098     | `index.midpoint` was 2000.9. Last observation of partner (negative) was made on 2001.4. 2000.9 + 0.5 == 2001.4 | 0.0 |
-| 591      | `index.midpoint` was 1999.9. Last observation of partner (negative) was made on 2000.3. 2000.3 < 1999.9 + 0.5 | -0.1 |
-| 2218      | `index.midpoint` was 2000.2. Last observation of partner (negative) was made on 2000.5. 2000.5 < 2000.2 + 0.5 | -0.2 |
-| 703      | Reported initiation of ART was 2009.1. First index positive test was 2010.4. | -1.3 |
-| 921      | Reported initiation of ART was 2005.9. First index positive test was 2007.5. | -1.6 |
-| 2860      | Reported initiation of ART was 2005.8. First index positive test was 2007.7. | -1.9 |
-| 705      | Reported initiation of ART was 2005. First index positive test was 2008.5. | -3.5 |
+| # dropped  | # partner ever seroconverted | # partner known positive before ART | # partner first positive after ART started for index |
+| ------- | ------------- | ------ | -- |
+| 53 | 26 | 23 | 3 |
 
-<sup>*</sup> Note that the implied midpoint based on last negative and first positive would be 1996.25, but we preferred to use the reported midpoint when available because it was presumably calculated with reference to the true dates of observations rather than the coarse dates of observations provided for anonymization.
+3 rows where df['index.firstObsDate'].isna()
 
-We can see that there were two kinds of couples for which we recorded no duration of transmission:
-- Couples where the starting point for the validity of SPVL measurements (6 months after inferred date of infection) was on or after the date of the last observation.
-- Couples where the index case reported first initiation on ART before they first recorded a positive test in the study. These could be examples of index partners who ceased ART or experienced ART failure. Since we could not distinguish between ART failure and interruption and because ART interruption dates were not reported, it is challenging to estimate the duration of potentially infectious contact. Since there were only 4 couples affected, we decided simply to exclude them from the data used for fitting.
+250 rows where (df['index.firstPosDate'] < df['index.firstObsDate'])
+=> somehow have positivity of index before they enter into observation (either in study? or in cohort?)
+
+0 rows where df['index.firstPosDate'].isna()
+
+14 couples where seroconversion took place after the start of ART:
+31, 128, 862, 1260, 1820, 1943, 1946, 2139, 2285, 2458, 2724, 2796, 3085, 3124
+
 
 After excluding these couples, we were left with data for 807 serodiscordant couples.
 
 ## Confusions:
+
+It's potentially misleading to use the midpoint between last negative and first positive as the date of seroconversion. Let's say you were following 10 couples and 5 of the donors had super high viral load and 5 had super low. You follow up 10 years later and you see 6 have seroconverted. You say that they all seroconverted after 5 years. But probably most of them seroconverted super early on! Can estimate the size of this potential problem by assuming seroconversion happens the day after the last negative test and seeing how much that changes results.
+
+Couple 1317: male (index) is first observed in 1996.8. Female is first observed in 1995.1. Presumably we start the period of infectious contact in 1996.8 -- but the Blanquart methodology doesn't dicuss.
+
+Couple 1341: looks malformed. index.firstPosDate = 1995.2 and index is male. But male.firstObsDate == male.lastObsDate == NA.
+
+It feels a little weird to say that if you were entered into the cohort and testing HIV positive that you still have to have 6 months added to the time? This is fine (because of no bias), but is it necessary?
 
 We should probably test a range of sex frequency to account for the fact that condom use maybe increased? Maybe do this only for couples after the Gray study (2001)?
 Should we also infer ART begins the midpoint? Kinda hard because I'm not sure we have a list of every observation made
