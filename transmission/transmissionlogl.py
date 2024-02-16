@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from dataclasses import dataclass
+import scipy.optimize 
 
 @dataclass(frozen=True)
 class SimpleBirthDeathModel():
@@ -28,12 +29,29 @@ class GammaModel():
 
 class Fitter:
     @staticmethod
-    def logl(data, model):
+    def nlogl(data, model):
         p_inf = model.p_inf(data.dose)
         p_trans = 1 - (1 - p_inf) ** (data.duration * data.dose_frequency)
-        nlogl = -1 * np.sum(data.success * np.log(p_trans)) - np.sum((data.number - data.success) * data.duration * data.dose_frequency * np.log(1 - p_inf))
+        logl = -1 * np.sum(data.success * np.log(p_trans)) - np.sum((data.number - data.success) * data.duration * data.dose_frequency * np.log(1 - p_inf))
 
-        return nlogl
+        return logl
+
+    @classmethod
+    def calculate_mle(cls, data, model_type, scale=1.0, **kwargs):
+        if 'bounds' in kwargs.keys():
+            scaled_bounds = []
+            bounds = kwargs['bounds']
+            for b in bounds:
+                b = np.array(b)
+                scaled_bounds.append(b / scale)
+            kwargs['bounds'] = scaled_bounds
+
+        def calculate_logl(x):
+            scaled_x = np.array(x)  * scale
+            model = model_klasses[model_type](*scaled_x)
+            return cls.nlogl(data, model)
+        minimize_result = scipy.optimize.minimize(calculate_logl, **kwargs)
+        return minimize_result.x * scale
 
 model_klasses = {
     'bdsim': SimpleBirthDeathModel,
