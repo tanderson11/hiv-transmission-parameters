@@ -17,6 +17,13 @@ Relevant columns:
 - `partner.firstPosDate`: first HIV positive observation for recipient/partner (equal to `inf` if partner never seroconverted).
 - `index.first.art.date`: date that the index individual first began ART (determined by self-reports: see Appendix).
 
+## Additional data to incorporate
+- Instead of of a number of measurements (`n`) and their average (`spvl`), we want the value of each individual measurement (including measurements that recorded as "undetectable").
+- Assay type. For each measurement: what quantitative assay was used to take the measurement.
+- Any additional self-reported data about ART use/compliance. We would like any information about whether or not individuals are on ART. At the moment there's not a clear reason to use this data (because as long as we have each measurement of viral load, we can use those to estimate the instantaneous viral load even on ART), but it may be important in subsequent analyses.
+- Data on male circumcision if available. This seems like an important cofactor based on some studies, and if we had it we could include it (or not, as desired).
+- Extend viral load data to include all viral load measurements for all individuals regardless of participation in a serodiscordant couple. That additional data will help us estimate the rate of false negatives.
+
 ## Processing the data
 
 - The data was exported from the RData file to a csv, which was munged in Python using `pandas`.
